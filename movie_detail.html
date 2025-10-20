@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ movie.title if movie else "MovieApp" }} - MovieApp</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .movie-details {
+            display: flex;
+            gap: 30px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .movie-poster {
+            max-width: 300px;
+            border-radius: 10px;
+        }
+
+        .movie-info-section {
+            max-width: 600px;
+        }
+
+        .cast-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .cast-list div {
+            background-color: #e50914;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .recommendation-grid {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .rec-card {
+            text-align: center;
+            max-width: 150px;
+            color: white;
+            text-decoration: none;
+        }
+
+        .rec-poster {
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        .rec-title {
+            font-size: 14px;
+            margin: 5px 0 0 0;
+        }
+
+        .rec-caption {
+            font-size: 12px;
+            color: #ccc;
+            margin: 2px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <a href="{{ url_for('home_page') }}" class="logo">CINEPHILE</a>
+        <div class="nav-links">
+            <a href="{{ url_for('home_page') }}">Home</a>
+            <a href="{{ url_for('logout') }}">Logout ({{ username }})</a>
+        </div>
+    </div>
+
+    <!-- Movie Details -->
+    <div class="content">
+        {% if movie %}
+        <div class="movie-details">
+            <div>
+                <img src="{{ movie.poster if movie.poster else url_for('static', filename='default_poster.jpg') }}" class="movie-poster" alt="{{ movie.title }}">
+                <p style="text-align:center;">⭐ {{ movie.vote_average if movie.vote_average else 'N/A' }}/10</p>
+            </div>
+            <div class="movie-info-section">
+                <h1>{{ movie.title if movie.title else 'Title not available' }} ({{ movie.year if movie.year else 'N/A' }})</h1>
+                <h3>Description:</h3>
+                <p>{{ movie.description if movie.description else 'Description not available.' }}</p>
+                <h3>Cast:</h3>
+                <div class="cast-list">
+                    {% if movie.cast %}
+                        {% for actor in movie.cast %}
+                            <div>{{ actor }}</div>
+                        {% endfor %}
+                    {% else %}
+                        <div>No cast information available.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommendations -->
+        {% if recommendations %}
+        <h2 style="color:#e50914; margin-top:40px;">Recommended Movies</h2>
+        <div class="recommendation-grid">
+            {% for rec in recommendations %}
+            <a href="{{ url_for('movie_detail_page', movie_id=rec.movie_id) }}" class="rec-card">
+                <img src="{{ rec.poster if rec.poster else url_for('static', filename='default_poster.jpg') }}" alt="{{ rec.title }}" class="rec-poster">
+                <h3 class="rec-title">{{ rec.title if rec.title else 'Title N/A' }}</h3>
+                <p class="rec-caption">Year: {{ rec.year if rec.year else 'N/A' }}</p>
+                <p class="rec-caption">Rating: ⭐ {{ rec.vote_average if rec.vote_average else 'N/A' }}</p>
+            </a>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% else %}
+        <p>Movie details not available.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

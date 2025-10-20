@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - MovieApp</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Search Form - Netflix style */
+        .search-form {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 50px 12px 20px; /* padding-right for button */
+            border: 1px solid #ccc;
+            border-radius: 25px;
+            outline: none;
+            font-size: 16px;
+            transition: box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: #e50914;
+            box-shadow: 0 0 5px rgba(229,9,20,0.3);
+        }
+
+        .search-button {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 32px;
+            height: 32px;
+            background-color: #e50914;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-button:hover {
+            background-color: #f40612;
+        }
+
+        /* Genre Buttons */
+        .genre-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+
+        .genre-button {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-size: 14px;
+        }
+
+        .genre-button:hover {
+            background-color: #e50914;
+        }
+
+        .genre-button.selected {
+            background-color: #e50914;
+        }
+
+        /* Movie Grid */
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .movie-card {
+            text-decoration: none;
+            color: white;
+        }
+
+        .movie-poster {
+            width: 100%;
+            border-radius: 8px;
+            transition: transform 0.3s;
+        }
+
+        .movie-poster:hover {
+            transform: scale(1.05);
+        }
+
+        .movie-info {
+            margin-top: 5px;
+        }
+
+        .movie-title {
+            font-size: 16px;
+            margin: 0;
+        }
+
+        .movie-year, .movie-rating {
+            font-size: 12px;
+            color: #aaa;
+            margin: 2px 0 0 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <a href="{{ url_for('home_page') }}" class="logo">CINEPHILE</a>
+        <div class="nav-links">
+            <a href="{{ url_for('home_page') }}">Home</a>
+            <a href="{{ url_for('logout') }}">Logout ({{ username }})</a>
+        </div>
+    </div>
+
+    <div class="content">
+        <h1 style="margin-bottom:15px;">Recommended Movies</h1>
+
+        <!-- Genre Buttons -->
+        <div class="genre-buttons">
+            {% for genre in genres %}
+                <form method="get" action="{{ url_for('genre_page', genre=genre) }}" style="display:inline;">
+                    <button type="submit" class="genre-button {% if selected_genre==genre %}selected{% endif %}">{{ genre }}</button>
+                </form>
+            {% endfor %}
+        </div>
+
+        <!-- Search Bar -->
+        <form method="POST" action="{{ url_for('search_movie') }}" class="search-form">
+            <input type="text" name="query" placeholder="Search for movies..." class="search-input" value="{{ search_query if search_query else '' }}">
+            <button type="submit" class="search-button">🔍</button>
+        </form>
+
+        <!-- Movie Grid -->
+        <div class="movie-grid">
+            {% for movie in movie_list %}
+            <a href="{{ url_for('movie_detail_page', movie_id=movie.movie_id) }}" class="movie-card">
+                <img src="{{ movie.poster }}" alt="{{ movie.title }}" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">{{ movie.title }}</h3>
+                    <p class="movie-year">{{ movie.year }}</p>
+                    <p class="movie-rating">⭐ {{ movie.vote_average }}</p>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
